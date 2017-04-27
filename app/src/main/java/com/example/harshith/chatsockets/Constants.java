@@ -1,0 +1,23 @@
+package com.example.harshith.chatsockets;
+
+import java.net.Inet4Address;
+
+/**
+ * Created by harshith on 4/27/17.
+ */
+
+public class Constants {
+    public static String host = "archy";
+    public static int port = 9399;
+    public static String ip_addr = "192.168.0.56";
+
+    public static String LOGIN_FILE_KEY = "me.harshithgoka.login_file_key";
+    public static String NAME = "name";
+    public static String USERNAME = "username";
+    public static String PASSWORD = "password";
+    public static String LOGGED_IN = "logged_in";
+    public static String PORT = "port";
+    public static String IP_ADDR = "ip_addr";
+
+    public static String LOGIN_DETAILS = "login";
+}
