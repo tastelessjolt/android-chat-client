@@ -16,7 +16,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -33,17 +32,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -210,17 +203,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     showProgress(false);
 
                     if (success) {
-                        if(vector.size() > 0) {
+                        if(login.size() > 0) {
+                            Gson gson = new Gson();
+                            String allUsers = gson.toJson(Person.getPersonArray(all_users));
                             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putBoolean(Constants.LOGGED_IN, true);
                             editor.putString(Constants.USERNAME, mEmail);
                             editor.putString(Constants.PASSWORD, mPassword);
-                            editor.putString(Constants.NAME, vector.get(2));
+                            editor.putString(Constants.NAME, login.get(2));
                             editor.putString(Constants.IP_ADDR, ip_addr);
                             editor.putInt(Constants.PORT, port);
+                            editor.putString(Constants.ALL_USERS, allUsers);
                             editor.commit();
+
+
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.putExtra(Constants.LEFT_OVER, data);
                             startActivity(intent);
                             finish();
                         }

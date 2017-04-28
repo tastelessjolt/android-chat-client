@@ -11,6 +11,8 @@ public class Constants {
     public static int port = 9399;
     public static String ip_addr = "192.168.0.56";
 
+    public static String LEFT_OVER = "left_overs";
+
     public static String LOGIN_FILE_KEY = "me.harshithgoka.login_file_key";
     public static String NAME = "name";
     public static String USERNAME = "username";
@@ -18,6 +20,7 @@ public class Constants {
     public static String LOGGED_IN = "logged_in";
     public static String PORT = "port";
     public static String IP_ADDR = "ip_addr";
+    public static String ALL_USERS = "all_users";
 
     public static String LOGIN_DETAILS = "login";
 }

@@ -4,9 +4,6 @@ package com.example.harshith.chatsockets;
  * Created by harshith on 4/27/17.
  */
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -30,8 +27,9 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     final String mPassword;
     private final String mIpAddr;
     private final int mPort;
+    String data;
 
-    ArrayList<String> vector;
+    ArrayList<String> login, online_users, all_users;
 
 
     UserLoginTask(String email, String password, String ip_addr, int port) {
@@ -39,7 +37,7 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
         mPassword = password;
         mIpAddr = ip_addr;
         mPort = port;
-        vector = new ArrayList<String>();
+        login = new ArrayList<String>();
     }
 
     @Override
@@ -68,33 +66,75 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
             byte[] buffer = new byte[256];
             int endPos = 0;
-            int bytes = inputStream.read(buffer);
-            String data = new String(buffer).substring(0, bytes);
-            Log.d("stream", data);
             StringBuilder stringBuilder = new StringBuilder();
-            while((endPos = data.indexOf('#')) < 0) {
-                stringBuilder.append(data);
+
+            // reading login ack
+            int bytes = inputStream.read(buffer);
+            stringBuilder.append(new String(buffer).substring(0, bytes));
+            Log.d("stream", stringBuilder.toString());
+
+            while((endPos = stringBuilder.indexOf("#")) < 0) {
                 bytes = inputStream.read(buffer);
                 if (bytes == -1) {
                     return false;
                 } else {
-                    data = new String(buffer).substring(0, bytes);
-                    Log.d("stream", data);
+                    stringBuilder.append(new String(buffer).substring(0, bytes));
+                    Log.d("stream", stringBuilder.toString());
                 }
             }
             Log.d("Meg", stringBuilder.toString());
             Log.d("End Pos", endPos + "");
-            stringBuilder.append(data.substring(0, endPos + 1));
 
-            vector = Utils.string2list(stringBuilder.toString());
+            login = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+            stringBuilder.delete(0, endPos + 1);
+
+            // reading online users and users
+            bytes = inputStream.read(buffer);
+            stringBuilder.append(new String(buffer).substring(0, bytes));
+            Log.d("stream", stringBuilder.toString());
+            int counter = 0;
+
+            while(true) {
+                if(counter < 2) {
+                    if ((endPos = stringBuilder.indexOf("#")) >= 0) {
+                        if(counter == 0) {
+                            online_users = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+                        }
+                        else if (counter == 1) {
+                            all_users = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+                        }
+                        stringBuilder.delete(0, endPos + 1);
+                        counter++;
+                    } else {
+                        bytes = inputStream.read(buffer);
+                        if (bytes == -1) {
+                            return false;
+                        } else {
+                            stringBuilder.append(new String(buffer).substring(0, bytes));
+                            Log.d("stream", stringBuilder.toString());
+                        }
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+            Log.d("Meg", stringBuilder.toString());
+
+            stringBuilder.delete(0, endPos + 1);
+
+            if(stringBuilder.length() > 0) {
+                data = stringBuilder.toString();
+            }
+            else {
+                data = "";
+            }
+
         }  catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//            Log.d("Mag", vector.toString() );
-
 
 
         // TODO: register the new account here.

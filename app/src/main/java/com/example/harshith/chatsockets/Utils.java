@@ -26,7 +26,7 @@ public class Utils {
         return stringBuilder.toString();
     }
 
-    public static String list2string(ArrayList<String> v) { // converts vector of strings to a string that
+    public static String list2string(ArrayList<String> v) { // converts login of strings to a string that
         StringBuilder ret = new StringBuilder("/");                              // fits our protocol
         for (String str : v) {
             ret.append( escape_special_chars(str) + ':');
@@ -36,7 +36,7 @@ public class Utils {
         return ret.toString();
     }
 
-    public static ArrayList<String> string2list(String msg) {   // converts string of our protocol to a vector of strings
+    public static ArrayList<String> string2list(String msg) {   // converts string of our protocol to a login of strings
         System.out.println("Message: " + msg);
         StringBuilder stringBuilder = new StringBuilder(msg);
         Log.d("stringBuilder before", stringBuilder.toString());
