@@ -20,11 +20,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public TextView name, lastSeen;
+        public TextView name, lastSeen, username;
         public ViewHolder(View v) {
             super(v);
             name = (TextView) v.findViewById(R.id.name);
             lastSeen = (TextView) v.findViewById(R.id.last_seen);
+            username = (TextView) v.findViewById(R.id.username);
         }
     }
 
@@ -51,8 +52,31 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+        String datetime = mDataset.get(position).getLastOnline();
+        if(datetime != null) {
+            if (!datetime.equals("")) {
+                String[] strings = datetime.split(" ");
+                datetime = "";
+                for (int i = 0; i != strings.length; i++) {
+                    if (i < 2) {
+                        datetime += strings[i] + "/";
+                    } else if (i == 2) {
+                        datetime += strings[i] + " ";
+                    } else if (i < 4) {
+                        datetime += strings[i] + ":";
+                    }
+                    else {
+                        datetime += strings[i];
+                    }
+                }
+            }
+        }
+        else {
+            datetime = new String();
+        }
         holder.name.setText(mDataset.get(position).getName());
-        holder.lastSeen.setText(mDataset.get(position).getLastOnline());
+        holder.lastSeen.setText(datetime);
+        holder.username.setText("@" + mDataset.get(position).getUsername());
     }
 
     // Return the size of your dataset (invoked by the layout manager)

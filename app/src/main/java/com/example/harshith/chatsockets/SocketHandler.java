@@ -8,6 +8,8 @@ import java.net.Socket;
 
 public class SocketHandler {
     private static Socket socket = null;
+    private static String ipAddress = null;
+    private static int port = 9399;
 
     public static synchronized Socket getSocket(){
         return socket;

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.ArraySet;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -155,6 +156,10 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
                         android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
                         ServerDetailDialogFragment serverDetailDialogFragment = new ServerDetailDialogFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Constants.IP_ADDR, userData.get(Constants.IP_ADDR).toString());
+                        bundle.putString(Constants.PORT, userData.get(Constants.PORT).toString());
+                        serverDetailDialogFragment.setArguments(bundle);
                         serverDetailDialogFragment.show(fragmentTransaction, "server_details");
                     }
                 }
@@ -217,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
                     ServerDetailDialogFragment serverDetailDialogFragment = new ServerDetailDialogFragment();
                     Bundle bundle = new Bundle();
                     bundle.putString(Constants.IP_ADDR, ip.getText().toString());
-                    bundle.putString(Constants.IP_ADDR, port.getText().toString());
+                    bundle.putString(Constants.PORT, port.getText().toString());
                     serverDetailDialogFragment.setArguments(bundle);
                     serverDetailDialogFragment.show(fragmentTransaction, "server_details");
                 }
@@ -290,8 +295,9 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
         public static PlaceholderFragment newInstance(int sectionNumber, ArrayList<Person> userList) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
+            Gson gson = new Gson();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            args.putSerializable(Constants.USERS, userList);
+            args.putString(Constants.USERS, gson.toJson(userList));
             fragment.setArguments(args);
             return fragment;
         }
@@ -318,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
             Bundle bundle = getArguments();
             if (bundle != null) {
                 sectionNumber = bundle.getInt(ARG_SECTION_NUMBER);
-                userList = (ArrayList<Person>) bundle.getSerializable(Constants.USERS);
+                userList = gson.fromJson(bundle.getString(Constants.USERS), new TypeToken<ArrayList<Person>>(){}.getType());
             }
             else {
                 Log.d("On TabFrag Create", "Bundle - NULL");
@@ -350,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
                 public void onClick(View view, int position) {
                     Person person = userList.get(position);
                     Intent intent = new Intent(getContext(), ChatActivity.class);
-                    intent.putExtra(Constants.PERSON, gson.toJson(person));
+                    intent.putExtra(Constants.USERNAME, person.getUsername());
                     startActivity(intent);
                 }
 
@@ -434,6 +440,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            Log.d("Sections Adapter", "Create Placeholder instance");
             if(position == 0) {
                 return PlaceholderFragment.newInstance(position + 1, onlineUsers);
             }

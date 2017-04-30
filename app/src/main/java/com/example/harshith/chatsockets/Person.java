@@ -8,8 +8,12 @@ import java.util.ArrayList;
 
 public class Person {
     private String name, username, lastOnline;
-
     private int friendIndication;
+
+    private boolean online;
+
+    private ArrayList<Message> messages;
+
 
     public Person() {
 
@@ -22,8 +26,33 @@ public class Person {
         this.friendIndication = friendIndication;
     }
 
+    public void addMessage(String message, boolean you) {
+        if(messages != null) {
+            messages.add(new Message(message, you));
+            // update ui
+        }
+    }
+
+    public void setMessages(ArrayList<Message> messages) {
+        this.messages = messages;
+    }
+
+
+
+    public ArrayList<Message> getMessages() {
+        return messages;
+    }
+
     public void print() {
         System.out.print(name + " " + username + " " + lastOnline);
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 
     public int getFriendIndication() {
@@ -47,6 +76,9 @@ public class Person {
                     i++;
                     person.setLastOnline(list.get(i));
                 }
+                else {
+                    person.setLastOnline("");
+                }
                 arrayList.add(person);
             }
             return  arrayList;
@@ -57,6 +89,7 @@ public class Person {
                 Person person = new Person();
                 person.setUsername(list.get(i)); i++;
                 person.setName(list.get(i));
+                person.setLastOnline("Online now");
                 arrayList.add(person);
             }
             return arrayList;
@@ -67,6 +100,7 @@ public class Person {
                 Person person = new Person();
                 person.setUsername(list.get(i)); i++;
                 person.setName(list.get(i));
+                person.setLastOnline("");
                 arrayList.add(person);
             }
             return arrayList;

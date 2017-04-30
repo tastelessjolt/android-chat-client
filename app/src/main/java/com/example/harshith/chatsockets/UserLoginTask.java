@@ -47,12 +47,10 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             // Simulate network access.
 
             InetAddress inetAddress = Inet4Address.getByName(mIpAddr);
-            Socket socket;
             if(SocketHandler.getSocket() == null) {
-                socket = new Socket();
-                SocketHandler.setSocket(socket);
+                SocketHandler.setSocket(new Socket(inetAddress, mPort));
             }
-            SocketHandler.getSocket().connect(new InetSocketAddress(inetAddress, mPort));
+            Log.d("isKeepAlive", SocketHandler.getSocket().getKeepAlive() + "");
             InputStream inputStream = SocketHandler.getSocket().getInputStream();
             OutputStream outputStream = SocketHandler.getSocket().getOutputStream();
 

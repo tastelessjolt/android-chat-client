@@ -7,6 +7,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.EditText;
 
@@ -58,10 +59,7 @@ public class ServerDetailDialogFragment extends DialogFragment {
             .setPositiveButton("Connect", new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if(! ip_addr.equals("") && ip_addr.equals("")) {
-                        ip_addr = String.valueOf(ip_address.getText());
-                        port = Integer.parseInt(String.valueOf(portno.getText()));
-                    }
+                    dialog.dismiss();
                 }
             })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
@@ -73,5 +71,18 @@ public class ServerDetailDialogFragment extends DialogFragment {
 
         // Create the ServerDetailsDialog object and return it
         return builder.create();
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Bundle bundle = getArguments();
+        if(bundle != null) {
+            EditText ip = (EditText) getView().findViewById(R.id.ip);
+            EditText port = (EditText) getView().findViewById(R.id.portno);
+            ip.setText(bundle.getString(Constants.IP_ADDR));
+            port.setText(bundle.getString(Constants.PORT));
+        }
     }
 }
