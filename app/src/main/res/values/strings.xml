@@ -15,4 +15,6 @@
     <string name="title_server_details">Server details</string>
     <string name="title_login">Sign in</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

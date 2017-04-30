@@ -29,7 +29,7 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     private final int mPort;
     String data;
 
-    ArrayList<String> login, online_users, all_users;
+    ArrayList<String> login, online_users, all_users, friends;
 
 
     UserLoginTask(String email, String password, String ip_addr, int port) {
@@ -47,8 +47,11 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             // Simulate network access.
 
             InetAddress inetAddress = Inet4Address.getByName(mIpAddr);
-            Socket socket = new Socket();
-            SocketHandler.setSocket(socket);
+            Socket socket;
+            if(SocketHandler.getSocket() == null) {
+                socket = new Socket();
+                SocketHandler.setSocket(socket);
+            }
             SocketHandler.getSocket().connect(new InetSocketAddress(inetAddress, mPort));
             InputStream inputStream = SocketHandler.getSocket().getInputStream();
             OutputStream outputStream = SocketHandler.getSocket().getOutputStream();
@@ -70,6 +73,9 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
             // reading login ack
             int bytes = inputStream.read(buffer);
+            if(bytes == -1) {
+                return false;
+            }
             stringBuilder.append(new String(buffer).substring(0, bytes));
             Log.d("stream", stringBuilder.toString());
 
@@ -86,6 +92,10 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             Log.d("End Pos", endPos + "");
 
             login = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+            System.out.println(login);
+            if(login.get(0).equals("wrong")) {
+                return false;
+            }
             stringBuilder.delete(0, endPos + 1);
 
             // reading online users and users
@@ -95,13 +105,19 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             int counter = 0;
 
             while(true) {
-                if(counter < 2) {
+                if(counter < 3) {
                     if ((endPos = stringBuilder.indexOf("#")) >= 0) {
                         if(counter == 0) {
                             online_users = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+                            System.out.println(online_users);
                         }
                         else if (counter == 1) {
+                            friends = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+                            System.out.println(friends);
+                        }
+                        else if (counter == 2) {
                             all_users = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+                            System.out.println(all_users);
                         }
                         stringBuilder.delete(0, endPos + 1);
                         counter++;
@@ -131,9 +147,9 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             }
 
         }  catch (UnknownHostException e) {
-            e.printStackTrace();
+            return false;
         } catch (IOException e) {
-            e.printStackTrace();
+            return false;
         }
 
 

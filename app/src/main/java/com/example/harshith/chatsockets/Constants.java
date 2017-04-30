@@ -21,6 +21,10 @@ public class Constants {
     public static String PORT = "port";
     public static String IP_ADDR = "ip_addr";
     public static String ALL_USERS = "all_users";
+    public static String ONLINE = "online";
+    public static String FRIENDS = "friends";
+    public static String USERS = "users";
+    public static String PERSON = "person";
 
     public static String LOGIN_DETAILS = "login";
 }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.audiofx.PresetReverb;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -74,6 +75,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if(sharedPreferences.getBoolean(Constants.LOGGED_IN, false)) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
+            finish();
         }
 
         // Set up the login form.
@@ -152,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
-    /**
+    /**w
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
@@ -206,6 +208,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         if(login.size() > 0) {
                             Gson gson = new Gson();
                             String allUsers = gson.toJson(Person.getPersonArray(all_users));
+                            String frnds = gson.toJson(Person.getPersonArray(friends));
+                            String online = gson.toJson(Person.getPersonArray(online_users));
                             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putBoolean(Constants.LOGGED_IN, true);
@@ -215,6 +219,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             editor.putString(Constants.IP_ADDR, ip_addr);
                             editor.putInt(Constants.PORT, port);
                             editor.putString(Constants.ALL_USERS, allUsers);
+                            editor.putString(Constants.FRIENDS, frnds);
+                            editor.putString(Constants.ONLINE, online);
                             editor.commit();
 
 
@@ -246,7 +252,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() >= 8;
+        return password.length() >= 4;
     }
 
     /**

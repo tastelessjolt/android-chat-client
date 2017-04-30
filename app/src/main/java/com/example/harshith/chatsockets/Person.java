@@ -7,15 +7,69 @@ import java.util.ArrayList;
  */
 
 public class Person {
+    private String name, username, lastOnline;
+
+    private int friendIndication;
+
+    public Person() {
+
+    }
+
+    public Person(String name, String username, String lastOnline, int friendIndication) {
+        this.name = name;
+        this.username = username;
+        this.lastOnline = lastOnline;
+        this.friendIndication = friendIndication;
+    }
+
+    public void print() {
+        System.out.print(name + " " + username + " " + lastOnline);
+    }
+
+    public int getFriendIndication() {
+        return friendIndication;
+    }
+
+    public void setFriendIndication(int friendIndication) {
+        this.friendIndication = friendIndication;
+    }
+
     static ArrayList<Person> getPersonArray(ArrayList<String> list) {
-        if(list.get(0).equals("users") || list.get(0).equals("olusers")) {
-            ArrayList<Person> arrayList = new ArrayList<Person>(list.size()/2);
+        if(list.get(0).equals("users")) {
+            ArrayList<Person> arrayList = new ArrayList<Person>();
             for (int i = 1; i != list.size(); i++) {
-                if(i%2 == 1) {
-                    arrayList.add(new Person(list.get(i + 1), list.get(i), list.get(i)));
+                boolean b = true;
+                Person person = new Person();
+                person.setUsername(list.get(i)); i++;
+                person.setName(list.get(i)); i++;
+                person.setFriendIndication(Integer.parseInt(list.get(i)));
+                if(person.getFriendIndication() == 0) {
+                    i++;
+                    person.setLastOnline(list.get(i));
                 }
+                arrayList.add(person);
             }
             return  arrayList;
+        }
+        else if(list.get(0).equals("olusers")) {
+            ArrayList<Person> arrayList = new ArrayList<Person>();
+            for(int i = 1; i != list.size(); i++) {
+                Person person = new Person();
+                person.setUsername(list.get(i)); i++;
+                person.setName(list.get(i));
+                arrayList.add(person);
+            }
+            return arrayList;
+        }
+        else if(list.get(0).equals("urfriends")) {
+            ArrayList<Person> arrayList = new ArrayList<Person>();
+            for(int i = 1; i != list.size(); i++) {
+                Person person = new Person();
+                person.setUsername(list.get(i)); i++;
+                person.setName(list.get(i));
+                arrayList.add(person);
+            }
+            return arrayList;
         }
         else {
             System.out.println(list);
@@ -44,17 +98,6 @@ public class Person {
     }
 
     public void setLastOnline(String lastOnline) {
-        this.lastOnline = lastOnline;
-    }
-
-    private String name, username, lastOnline;
-
-    public Person() {
-
-    }
-    public Person(String name, String username, String lastOnline) {
-        this.name = name;
-        this.username = username;
         this.lastOnline = lastOnline;
     }
 
