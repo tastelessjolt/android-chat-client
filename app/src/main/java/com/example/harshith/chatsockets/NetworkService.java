@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
@@ -44,7 +45,16 @@ public class NetworkService extends Service {
             @Override
             public void handleMessage(android.os.Message message) {
                 if(message.what == Constants.RESPONSE) {
+                    Bundle bundle = message.getData();
+                    if(bundle != null) {
+                        ArrayList<String> data = bundle.getStringArrayList(Constants.READ);
+                        if (data.get(0).equals("")) {
 
+                        }
+                        else {
+                            
+                        }
+                    }
                 }
             }
         };
@@ -76,7 +86,7 @@ public class NetworkService extends Service {
             SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), getApplicationContext(), request, ipAddress, port);
             sendDataThread.start();
             System.out.println("start Senddatathread");
-            ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext(), ipAddress, port);
+            ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext(), , ipAddress, port);
             receiveDataThread.start();
             System.out.println("start receivedatathread");
         }
