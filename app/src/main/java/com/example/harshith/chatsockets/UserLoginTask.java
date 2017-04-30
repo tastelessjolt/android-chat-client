@@ -45,7 +45,6 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         try {
             // Simulate network access.
-
             InetAddress inetAddress = Inet4Address.getByName(mIpAddr);
             if(SocketHandler.getSocket() == null) {
                 SocketHandler.setSocket(new Socket(inetAddress, mPort));

@@ -25,6 +25,7 @@ public class Constants {
     public static String FRIENDS = "friends";
     public static String USERS = "users";
     public static String PERSON = "person";
+    public static String REQUEST = "request";
 
     public static String LOGIN_DETAILS = "login";
 }

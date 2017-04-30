@@ -3,6 +3,7 @@ package com.example.harshith.chatsockets;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -63,6 +64,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private EditText mIpAddressView;
     private EditText mPortView;
+
+    private static BroadcastReceiver broadcastReceiver;
+
+    public static BroadcastReceiver getBroadcastReceiver() {
+        return broadcastReceiver;
+    }
+    public
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,8 +177,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String email = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
         final String ip_addr = mIpAddressView.getText().toString();
         final int port = Integer.parseInt(mPortView.getText().toString());
         boolean cancel = false;
@@ -241,7 +249,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     showProgress(false);
                 }
             };
-            mAuthTask.execute((Void) null);
+//            mAuthTask.execute((Void) null);
+            Intent intent = new Intent(getApplicationContext(), NetworkService.class);
+            ArrayList<String> messageVector = new ArrayList<String>() {
+                {
+                    add("login");
+                    add(email);
+                    add(password);
+                }
+            };
+            intent.putExtra(Constants.REQUEST, messageVector);
+            intent.putExtra(Constants.IP_ADDR, ip_addr);
+            intent.putExtra(Constants.PORT, port);
+            startService(intent);
         }
     }
 
