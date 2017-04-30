@@ -20,6 +20,16 @@ public class NetworkService extends Service {
     public NetworkService() {
     }
 
+    private static BroadcastReceiver broadcastReceiver;
+
+    public static BroadcastReceiver getBroadcastReceiver() {
+        return broadcastReceiver;
+    }
+
+    public static void setBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+        NetworkService.broadcastReceiver = broadcastReceiver;
+    }
+
     InputStream inputStream;
     OutputStream outputStream;
 
@@ -27,6 +37,13 @@ public class NetworkService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //TODO do something useful
+
+        setBroadcastReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+            }
+        });
         ArrayList<String> request = intent.getStringArrayListExtra(Constants.REQUEST);
 
         boolean wasSocketOpen = true;

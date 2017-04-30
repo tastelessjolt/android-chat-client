@@ -1,6 +1,7 @@
 package com.example.harshith.chatsockets;
 
 import android.app.DialogFragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -284,6 +285,8 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
         private ArrayList<Person> userList;
 
         private Gson gson;
+        private static BroadcastReceiver broadcastReceiver;
+
 
         public PlaceholderFragment() {
 
@@ -324,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
             Bundle bundle = getArguments();
             if (bundle != null) {
                 sectionNumber = bundle.getInt(ARG_SECTION_NUMBER);
-                userList = gson.fromJson(bundle.getString(Constants.USERS), new TypeToken<ArrayList<Person>>(){}.getType());
+                userList = (ArrayList<Person>)gson.fromJson(bundle.getString(Constants.USERS), new TypeToken<ArrayList<Person>>(){}.getType());
             }
             else {
                 Log.d("On TabFrag Create", "Bundle - NULL");

@@ -70,12 +70,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public static BroadcastReceiver getBroadcastReceiver() {
         return broadcastReceiver;
     }
-    public
+    public static void setBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+        LoginActivity.broadcastReceiver = broadcastReceiver;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        setBroadcastReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getStringExtra(Constants.BROADCAST).equals(Constants.LOGGED_IN)) {
+                    ArrayList<String> login = intent.getStringArrayListExtra(Constants.LOGIN_DETAILS);
+                    showProgress(false);
+                    if(login.get(0).equals("login")) {
+                        Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent1);
+                        finish();
+                    }
+                    else {
+                        mPasswordView.setError(getString(R.string.error_incorrect_password));
+                        mPasswordView.requestFocus();
+                    }
+                }
+            }
+        });
 
         // if logged in already redirect to MainActivity
         Context context = getApplicationContext();
