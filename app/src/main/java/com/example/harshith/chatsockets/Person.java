@@ -12,7 +12,7 @@ public class Person {
 
     private boolean online;
 
-    private ArrayList<Message> messages;
+    private ArrayList<MessageData> messageDatas;
 
 
     public Person() {
@@ -27,20 +27,20 @@ public class Person {
     }
 
     public void addMessage(String message, boolean you) {
-        if(messages != null) {
-            messages.add(new Message(message, you));
+        if(messageDatas != null) {
+            messageDatas.add(new MessageData(message, you));
             // update ui
         }
     }
 
-    public void setMessages(ArrayList<Message> messages) {
-        this.messages = messages;
+    public void setMessageDatas(ArrayList<MessageData> messageDatas) {
+        this.messageDatas = messageDatas;
     }
 
 
 
-    public ArrayList<Message> getMessages() {
-        return messages;
+    public ArrayList<MessageData> getMessageDatas() {
+        return messageDatas;
     }
 
     public void print() {

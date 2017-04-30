@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
     ArrayList<Person> allUserList, friends, onlineUsers;
     UserLoginTask userLoginTask;
 
+    String ipAddr;
+    int port;
 
     Gson gson;
 
@@ -69,28 +71,8 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        allUserList = new ArrayList<Person>();
-
-        gson = new Gson();
-
-        sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
-        userData = sharedPreferences.getAll();
-
-        allUserList = gson.fromJson((String) userData.get(Constants.ALL_USERS), new TypeToken<ArrayList<Person>>(){}.getType());
-        friends = gson.fromJson((String) userData.get(Constants.FRIENDS), new TypeToken<ArrayList<Person>>(){}.getType());
-        onlineUsers = gson.fromJson((String) userData.get(Constants.ONLINE), new TypeToken<ArrayList<Person>>(){}.getType());
-        if(allUserList == null) {
-            Log.d("Main create", "all null");
-        }
-        if (friends == null) {
-            Log.d("Main create", "friends null");
-
-        }
-        if (onlineUsers == null) {
-            Log.d("Main create", "online null");
-
-        }
-
+//        friends = gson.fromJson((String) userData.get(Constants.FRIENDS), new TypeToken<ArrayList<Person>>(){}.getType());
+//        onlineUsers = gson.fromJson((String) userData.get(Constants.ONLINE), new TypeToken<ArrayList<Person>>(){}.getType());
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -118,64 +100,101 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
     @Override
     protected void onResume() {
         super.onResume();
-        if(SocketHandler.getSocket() == null){
-            userLoginTask = new UserLoginTask((String) userData.get(Constants.USERNAME), (String) userData.get(Constants.PASSWORD),
-                    (String) userData.get(Constants.IP_ADDR), (Integer) userData.get(Constants.PORT)) {
-                @Override
-                protected void onPostExecute(final Boolean success) {
-                    userLoginTask = null;
-                    Log.d("post the request :", "Come in?");
-                    if (success) {
-                        if (login.size() > 0) {
-                            Gson gson = new Gson();
-                            final String allUsers = gson.toJson(Person.getPersonArray(all_users));
-                            String frnds = gson.toJson(Person.getPersonArray(friends));
-                            String online = gson.toJson(Person.getPersonArray(online_users));
-                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putBoolean(Constants.LOGGED_IN, true);
-                            editor.putString(Constants.USERNAME, mEmail);
-                            editor.putString(Constants.PASSWORD, mPassword);
-                            editor.putString(Constants.NAME, login.get(2));
-                            editor.putString(Constants.ALL_USERS, allUsers);
-                            editor.putString(Constants.ALL_USERS, allUsers);
-                            editor.putString(Constants.FRIENDS, frnds);
-                            editor.putString(Constants.ONLINE, online);
-                            editor.commit();
-                            Log.d("Main", "Stored user data");
-                            allUserList.addAll(Person.getPersonArray(all_users));
 
-//                            if(mAllUsersAdapter != null) {
-//                                mAllUsersAdapter.notifyDataSetChanged();
-//                            }
 
-                            left_over = data;
-                        }
-                    } else {
-                        Log.d("First Frag", "into this");
-                        android.app.FragmentManager fragmentManager = getFragmentManager();
-                        android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if(SocketHandler.getSocket() == null) {
+            allUserList = new ArrayList<Person>();
 
-                        ServerDetailDialogFragment serverDetailDialogFragment = new ServerDetailDialogFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putString(Constants.IP_ADDR, userData.get(Constants.IP_ADDR).toString());
-                        bundle.putString(Constants.PORT, userData.get(Constants.PORT).toString());
-                        serverDetailDialogFragment.setArguments(bundle);
-                        serverDetailDialogFragment.show(fragmentTransaction, "server_details");
-                    }
-                }
+            gson = new Gson();
 
-                @Override
-                protected void onCancelled() {
-                    userLoginTask = null;
+            sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
+            userData = sharedPreferences.getAll();
+
+            allUserList = Database.getAllPeople();
+            friends = Database.getFriends();
+            onlineUsers = Database.getOnlineUsers();
+
+            if(allUserList == null) {
+                Log.d("Main create", "all null");
+            }
+            if (friends == null) {
+                Log.d("Main create", "friends null");
+
+            }
+            if (onlineUsers == null) {
+                Log.d("Main create", "online null");
+
+            }
+
+            Intent intent = new Intent(getApplicationContext(), NetworkService.class);
+            ArrayList<String> messageVector = new ArrayList<String>() {
+                {
+                    add("login");
+                    add(Database.getUsername());
+                    add(Database.getPassword());
                 }
             };
+            intent.putExtra(Constants.REQUEST, messageVector);
+            intent.putExtra(Constants.IP_ADDR, ipAddr);
+            intent.putExtra(Constants.PORT, port);
+            startService(intent);
+        }
+//            userLoginTask = new UserLoginTask((String) userData.get(Constants.USERNAME), (String) userData.get(Constants.PASSWORD),
+//                    (String) userData.get(Constants.IP_ADDR), (Integer) userData.get(Constants.PORT)) {
+//                @Override
+//                protected void onPostExecute(final Boolean success) {
+//                    userLoginTask = null;
+//                    Log.d("post the request :", "Come in?");
+//                    if (success) {
+//                        if (login.size() > 0) {
+//                            Gson gson = new Gson();
+//                            final String allUsers = gson.toJson(Person.getPersonArray(all_users));
+//                            String frnds = gson.toJson(Person.getPersonArray(friends));
+//                            String online = gson.toJson(Person.getPersonArray(online_users));
+//                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
+//                            SharedPreferences.Editor editor = sharedPreferences.edit();
+//                            editor.putBoolean(Constants.LOGGED_IN, true);
+//                            editor.putString(Constants.USERNAME, mEmail);
+//                            editor.putString(Constants.PASSWORD, mPassword);
+//                            editor.putString(Constants.NAME, login.get(2));
+//                            editor.putString(Constants.ALL_USERS, allUsers);
+//                            editor.putString(Constants.ALL_USERS, allUsers);
+//                            editor.putString(Constants.FRIENDS, frnds);
+//                            editor.putString(Constants.ONLINE, online);
+//                            editor.commit();
+//                            Log.d("Main", "Stored user data");
+//                            allUserList.addAll(Person.getPersonArray(all_users));
+//
+////                            if(mAllUsersAdapter != null) {
+////                                mAllUsersAdapter.notifyDataSetChanged();
+////                            }
+//
+//                            left_over = data;
+//                        }
+//                    } else {
+//                        Log.d("First Frag", "into this");
+//                        android.app.FragmentManager fragmentManager = getFragmentManager();
+//                        android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//                        ServerDetailDialogFragment serverDetailDialogFragment = new ServerDetailDialogFragment();
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(Constants.IP_ADDR, userData.get(Constants.IP_ADDR).toString());
+//                        bundle.putString(Constants.PORT, userData.get(Constants.PORT).toString());
+//                        serverDetailDialogFragment.setArguments(bundle);
+//                        serverDetailDialogFragment.show(fragmentTransaction, "server_details");
+//                    }
+//                }
+//
+//                @Override
+//                protected void onCancelled() {
+//                    userLoginTask = null;
+//                }
+//            };
 
-            userLoginTask.execute((Void) null);
-        }
-        else {
+//            userLoginTask.execute((Void) null);
+
             allUserList = gson.fromJson((String) userData.get(Constants.ALL_USERS), new TypeToken<ArrayList<Person>>(){}.getType());
-        }
+
     }
 
     @Override
@@ -187,55 +206,57 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
         Log.d("IP", ip.getText().toString());
         Log.d("PORT", port.getText().toString());
 
-        userLoginTask = new UserLoginTask((String) userData.get(Constants.USERNAME), (String) userData.get(Constants.PASSWORD),
-                String.valueOf(ip.getText()), Integer.parseInt(String.valueOf(userData.get(port.getText())))) {
-            @Override
-            protected void onPostExecute(final Boolean success) {
-                userLoginTask = null;
-                if (success) {
-                    if (login.size() > 0) {
-                        Gson gson = new Gson();
-                        String allUsers = gson.toJson(Person.getPersonArray(all_users));
-                        String frnds = gson.toJson(Person.getPersonArray(friends));
-                        String online = gson.toJson(Person.getPersonArray(online_users));
-                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean(Constants.LOGGED_IN, true);
-                        editor.putString(Constants.USERNAME, mEmail);
-                        editor.putString(Constants.PASSWORD, mPassword);
-                        editor.putString(Constants.NAME, login.get(2));
-                        editor.putString(Constants.ALL_USERS, allUsers);
-                        editor.putString(Constants.FRIENDS, frnds);
-                        editor.putString(Constants.ONLINE, online);
-                        editor.commit();
 
-                        allUserList.addAll(Person.getPersonArray(all_users));
 
-//                        mAllUsersAdapter.notifyDataSetChanged();
+//        userLoginTask = new UserLoginTask((String) userData.get(Constants.USERNAME), (String) userData.get(Constants.PASSWORD),
+//                String.valueOf(ip.getText()), Integer.parseInt(String.valueOf(userData.get(port.getText())))) {
+//            @Override
+//            protected void onPostExecute(final Boolean success) {
+//                userLoginTask = null;
+//                if (success) {
+//                    if (login.size() > 0) {
+//                        Gson gson = new Gson();
+//                        String allUsers = gson.toJson(Person.getPersonArray(all_users));
+//                        String frnds = gson.toJson(Person.getPersonArray(friends));
+//                        String online = gson.toJson(Person.getPersonArray(online_users));
+//                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Constants.LOGIN_FILE_KEY, Context.MODE_PRIVATE);
+//                        SharedPreferences.Editor editor = sharedPreferences.edit();
+//                        editor.putBoolean(Constants.LOGGED_IN, true);
+//                        editor.putString(Constants.USERNAME, mEmail);
+//                        editor.putString(Constants.PASSWORD, mPassword);
+//                        editor.putString(Constants.NAME, login.get(2));
+//                        editor.putString(Constants.ALL_USERS, allUsers);
+//                        editor.putString(Constants.FRIENDS, frnds);
+//                        editor.putString(Constants.ONLINE, online);
+//                        editor.commit();
+//
+//                        allUserList.addAll(Person.getPersonArray(all_users));
+//
+////                        mAllUsersAdapter.notifyDataSetChanged();
+//
+//                        left_over = data;
+//                    }
+//                } else {
+//                    Log.d("Dialog Positive Frag", "into this");
+//                    android.app.FragmentManager fragmentManager = getFragmentManager();
+//                    android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//                    ServerDetailDialogFragment serverDetailDialogFragment = new ServerDetailDialogFragment();
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(Constants.IP_ADDR, ip.getText().toString());
+//                    bundle.putString(Constants.PORT, port.getText().toString());
+//                    serverDetailDialogFragment.setArguments(bundle);
+//                    serverDetailDialogFragment.show(fragmentTransaction, "server_details");
+//                }
+//            }
+//
+//            @Override
+//            protected void onCancelled() {
+//                userLoginTask = null;
+//            }
+//        };
 
-                        left_over = data;
-                    }
-                } else {
-                    Log.d("Dialog Positive Frag", "into this");
-                    android.app.FragmentManager fragmentManager = getFragmentManager();
-                    android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                    ServerDetailDialogFragment serverDetailDialogFragment = new ServerDetailDialogFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.IP_ADDR, ip.getText().toString());
-                    bundle.putString(Constants.PORT, port.getText().toString());
-                    serverDetailDialogFragment.setArguments(bundle);
-                    serverDetailDialogFragment.show(fragmentTransaction, "server_details");
-                }
-            }
-
-            @Override
-            protected void onCancelled() {
-                userLoginTask = null;
-            }
-        };
-
-        userLoginTask.execute((Void) null);
+//        userLoginTask.execute((Void) null);
     }
 
     @Override

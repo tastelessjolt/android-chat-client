@@ -5,7 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +35,20 @@ public class NetworkService extends Service {
 
     InputStream inputStream;
     OutputStream outputStream;
+    public Handler handler;
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        handler = new Handler() {
+            @Override
+            public void handleMessage(android.os.Message message) {
+                if(message.what == Constants.RESPONSE) {
+
+                }
+            }
+        };
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -41,54 +57,37 @@ public class NetworkService extends Service {
         setBroadcastReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                System.out.println("Broadcast received for receiving thread");
 
+//                ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), context, ipAdd);
+//                receiveDataThread.start();
             }
         });
+
         ArrayList<String> request = intent.getStringArrayListExtra(Constants.REQUEST);
 
         boolean wasSocketOpen = true;
         String ipAddress = intent.getStringExtra(Constants.IP_ADDR);
         int port = intent.getIntExtra(Constants.PORT, 9399);
-        if(SocketHandler.getSocket() == null) {
-            wasSocketOpen = false;
-            try {
-                InetAddress inetAddress = Inet4Address.getByName(ipAddress);
-                SocketHandler.setSocket(new Socket(inetAddress, port));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            if (!SocketHandler.getSocket().isConnected()) {
-                wasSocketOpen = false;
-                InetAddress inetAddress = null;
-                try {
-                    inetAddress = Inet4Address.getByName(ipAddress);
-                    SocketHandler.setSocket(new Socket(inetAddress, port));
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        System.out.println(request);
 
-        if(request.get(1).equals("login")) {
-            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), getApplicationContext(), request);
+
+        if(request.get(0).equals("login")) {
+            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), getApplicationContext(), request, ipAddress, port);
             sendDataThread.start();
-
-            ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext());
+            System.out.println("start Senddatathread");
+            ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext(), ipAddress, port);
             receiveDataThread.start();
+            System.out.println("start receivedatathread");
         }
         else {
-            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), getApplicationContext(), request);
+            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), getApplicationContext(), request, ipAddress, port);
             sendDataThread.start();
-            if(!wasSocketOpen) {
-                ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext());
-                receiveDataThread.start();
-            }
+            System.out.println("start Senddatathread");
+//            if(!wasSocketOpen) {
+//                ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext());
+//                receiveDataThread.start();
+//            }
         }
 
 

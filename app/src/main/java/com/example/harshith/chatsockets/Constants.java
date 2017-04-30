@@ -27,6 +27,12 @@ public class Constants {
     public static String PERSON = "person";
     public static String REQUEST = "request";
     public static String BROADCAST = "broadcast";
+    public static String DATABASE = "database";
+    public static String START_RECEIVE = "receiver";
+
+
+    public static int RESPONSE = 2;
+    public static String READ = "response";
 
     public static String LOGIN_DETAILS = "login";
 }

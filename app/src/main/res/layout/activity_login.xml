@@ -94,6 +94,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <EditText
                     android:id="@+id/ip_addr"
                     android:layout_width="match_parent"
@@ -101,7 +102,7 @@
                     android:ems="10"
                     android:hint=""
                     android:inputType="textPersonName"
-                    android:text="192.168.0.56" />
+                    android:text="10.196.2.36" />
 
             </android.support.design.widget.TextInputLayout>
             <android.support.design.widget.TextInputLayout

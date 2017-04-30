@@ -37,7 +37,7 @@ public class Utils {
     }
 
     public static ArrayList<String> string2list(String msg) {   // converts string of our protocol to a login of strings
-        System.out.println("Message: " + msg);
+        System.out.println("MessageData: " + msg);
         StringBuilder stringBuilder = new StringBuilder(msg);
         Log.d("stringBuilder before", stringBuilder.toString());
         if(stringBuilder.charAt(0) == '/') {                                     // for easy access

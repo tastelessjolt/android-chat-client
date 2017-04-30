@@ -1,14 +1,9 @@
 package com.example.harshith.chatsockets;
 
-import android.support.annotation.NonNull;
-import android.widget.ArrayAdapter;
-
-import java.security.AllPermission;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * Created by harshith on 4/30/17.
@@ -16,10 +11,19 @@ import java.util.Set;
 
 public class Database {
     private static String you;
+    private static String password;
+    private static String ipAddr;
+    private static int port;
     private static ArrayList<Person> allPeople;
     private static ArrayList<Person> friends;
     private static ArrayList<Person> onlineUsers;
     private static Map<String, Person> people;
+
+    public static synchronized void setMyself(ArrayList<String> login) {
+        if(login.get(0).equals("login")) {
+            you = login.get(1);
+        }
+    }
 
     public static boolean contains(ArrayList<Person> users, String username ) {
         if(users != null && username != null) {
@@ -30,6 +34,15 @@ public class Database {
             }
         }
         return false;
+    }
+    public static void setPassword(String password) {
+        if(password != null) {
+            Database.password = password;
+        }
+    }
+
+    public static synchronized String getPassword() {
+        return password;
     }
 
     public static void initialize(ArrayList<Person> allPeople, ArrayList<Person> friends, ArrayList<Person> onlineUsers) {
@@ -70,10 +83,6 @@ public class Database {
 
     public static void setOnlineUsers(ArrayList<Person> onlineUsers) {
         Database.onlineUsers = onlineUsers;
-    }
-
-    public static synchronized ArrayList<Person> getPeople() {
-        return allPeople;
     }
 
     public static synchronized void setPeople(ArrayList<Person> allpeople) {
@@ -155,13 +164,10 @@ public class Database {
     public static synchronized ArrayList<Person> getAllUsers() {
         return allPeople;
     }
-    public static synchronized void addPerson(ArrayList<String> person) {
-
-    }
     public static synchronized ArrayList<Person> getFriendRequests() {
-        ArrayList<Person> requests;
+        ArrayList<Person> requests = new ArrayList<Person>();
 
-        for(Type person: allPeople) {
+        for(Person person: allPeople) {
             if(person.getFriendIndication() == -1)
                 requests.add(person);
         }
@@ -171,14 +177,14 @@ public class Database {
 
     public static synchronized void setAllMessages(ArrayList<String> messages) {
         if(messages != null) {
-            if(messages.get(0) == "all_messages") {
+            if(Objects.equals(messages.get(0), "all_messages")) {
                 String username = messages.get(1);
                 for(int i = 2; i < messages.size(); i++) {
-                    if(messages.get(i) == you) {
-                        people[username].messages.add(Message(messages.get(i+1), true));
+                    if(Objects.equals(messages.get(i), you)) {
+                        people.get(username).getMessageDatas().add(new MessageData(messages.get(i+1), true));
                     }
                     else
-                        people[username].messages.add(Message(messages.get(i+1), false));
+                        people.get(username).getMessageDatas().add(new MessageData(messages.get(i+1), false));
                 }
             }
         }
