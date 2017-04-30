@@ -146,17 +146,42 @@ public class Database {
             }
         }
     }
-    public static synchronized void getOnlineUsers() {
-
+    public static synchronized ArrayList<Person> getOnlineUsers() {
+        return onlineUsers;
     }
-    public static synchronized void getFriends() {
-
+    public static synchronized ArrayList<Person> getFriends() {
+        return friends;
     }
-    public static synchronized void getAllUsers() {
-
+    public static synchronized ArrayList<Person> getAllUsers() {
+        return allPeople;
     }
     public static synchronized void addPerson(ArrayList<String> person) {
 
+    }
+    public static synchronized ArrayList<Person> getFriendRequests() {
+        ArrayList<Person> requests;
+
+        for(Type person: allPeople) {
+            if(person.getFriendIndication() == -1)
+                requests.add(person);
+        }
+
+        return requests;
+    }
+
+    public static synchronized void setAllMessages(ArrayList<String> messages) {
+        if(messages != null) {
+            if(messages.get(0) == "all_messages") {
+                String username = messages.get(1);
+                for(int i = 2; i < messages.size(); i++) {
+                    if(messages.get(i) == you) {
+                        people[username].messages.add(Message(messages.get(i+1), true));
+                    }
+                    else
+                        people[username].messages.add(Message(messages.get(i+1), false));
+                }
+            }
+        }
     }
 
 }
