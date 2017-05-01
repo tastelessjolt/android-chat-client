@@ -45,7 +45,8 @@ public class NetworkService extends Service {
     public Handler handler;
     String ipAddress;
     int port;
-    ArrayList<String> friends, allUsers, online;
+    ArrayList<Person> online, friends, allusers;
+
 
     @Override
     public void onCreate() {
@@ -58,6 +59,7 @@ public class NetworkService extends Service {
                     if(bundle != null) {
                         ArrayList<String> data = bundle.getStringArrayList(Constants.READ);
                         if (data.get(0).equals("login")) {
+
                             System.out.println("Got in to the message handling the login");
                             Intent broadcast = new Intent(Constants.BROADCAST_BASE);
                             broadcast.putExtra(Constants.BROADCAST, Constants.LOGGED_IN);
@@ -65,8 +67,52 @@ public class NetworkService extends Service {
                             sendBroadcast(broadcast);
                             System.out.println("Broadcasted message");
                         }
+                        else if(data.get(0).equals("wrong")) {
+                            // Username/Password incorrect
+                        }
+                        else if(data.get(0).equals("logout")) {
+                            // Username/Password incorrect
+                        }
+                        else if(data.get(0).equals("olusers")) {
+                            online  = Person.getPersonArray(data);
+                        }
+                        else if(data.get(0).equals("users")) {
+                            allusers = Person.getPersonArray(data);
+                            if(online != null && friends != null && allusers != null)
+                            Database.initialize(allusers, friends, online);
+                            System.out.println("Database initialized");
+                        }
+                        else if(data.get(0).equals("urfriends")) {
+                            friends = Person.getPersonArray(data);
+                        }
+                        else if(data.get(0).equals("online")) {
+                            Database.setOnline(data);
+                        }
+                        else if(data.get(0).equals("offline")) {
+                            Database.setOffline(data);
+                        }
+                        else if(data.get(0).equals("message")) {
+                            Database.getPerson(data.get(1)).addMessage(data.get(2), false);
+                        }
+                        else if(data.get(0).equals("blocked")) {
+                            Person blocked;
+                            blocked = Database.getPerson(data.get(1));
+                            blocked.setFriendIndication(2);
+                        }
+                        else if(data.get(0).equals("sentreq")) {
+                            Database.getPerson(data.get(1)).setFriendIndication(1);
+                        }
+                        else if(data.get(0).equals("recvreq")) {
+                            Database.getPerson(data.get(1)).setFriendIndication(-1);
+                        }
+                        else if(data.get(0).equals("accepted")) {
+                            Database.getPerson(data.get(1)).setFriendIndication(0);
+                        }
+                        else if(data.get(0).equals("acceptedyour")) {
+                            Database.getPerson(data.get(1)).setFriendIndication(0);
+                        }
                         else {
-
+                            //
                         }
                     }
                 }
