@@ -16,7 +16,7 @@ public class Person {
 
 
     public Person() {
-
+        messageDatas = new ArrayList<MessageData>();
     }
 
     public Person(String name, String username, String lastOnline, int friendIndication) {
@@ -24,6 +24,7 @@ public class Person {
         this.username = username;
         this.lastOnline = lastOnline;
         this.friendIndication = friendIndication;
+        messageDatas = new ArrayList<MessageData>();
     }
 
     public void addMessage(String message, boolean you) {

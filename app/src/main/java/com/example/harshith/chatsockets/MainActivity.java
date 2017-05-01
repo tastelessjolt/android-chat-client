@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
     Map<String, ?> userData;
     String left_over;
 
-    ArrayList<Person> allUserList, friends, onlineUsers;
+    ArrayList<Person> allUserList, friends, onlineUsers, friendRequests;
     UserLoginTask userLoginTask;
 
     String ipAddr;
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
         allUserList = Database.getAllPeople();
         friends = Database.getFriends();
         onlineUsers = Database.getOnlineUsers();
+        friendRequests = Database.getFriendRequests();
 
 //        friends = gson.fromJson((String) userData.get(Constants.FRIENDS), new TypeToken<ArrayList<Person>>(){}.getType());
 //        onlineUsers = gson.fromJson((String) userData.get(Constants.ONLINE), new TypeToken<ArrayList<Person>>(){}.getType());
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
 //        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), allUserList, friends, onlineUsers);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), allUserList, friends, onlineUsers, friendRequests);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -108,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
     protected void onResume() {
         super.onResume();
 
-        registerReceiver(broadcastReceiver, new IntentFilter(Constants.BROADCAST_BASE));
         if(SocketHandler.getSocket() == null) {
             allUserList = new ArrayList<Person>();
 
@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -465,12 +464,13 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public ArrayList<Person> allUsers, friends, onlineUsers;
-        public SectionsPagerAdapter(FragmentManager fm, ArrayList<Person> allUsers, ArrayList<Person> friends, ArrayList<Person> onlineUsers) {
+        public ArrayList<Person> allUsers, friends, onlineUsers, friendRequests;
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<Person> allUsers, ArrayList<Person> friends, ArrayList<Person> onlineUsers, ArrayList<Person> friendRequests) {
             super(fm);
             this.allUsers = allUsers;
             this.friends = friends;
             this.onlineUsers = onlineUsers;
+            this.friendRequests = friendRequests;
         }
 
         @Override
@@ -486,6 +486,9 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
             }
             else if (position == 2) {
                 return PlaceholderFragment.newInstance(position + 1, allUsers);
+            }
+            else if (position == 3) {
+                return PlaceholderFragment.newInstance(position + 1, friendRequests);
             }
             return null;
         }
@@ -505,6 +508,8 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
                     return "All Friends";
                 case 2:
                     return "All Users";
+                case 3:
+                    return "Friend Requests";
             }
             return null;
         }

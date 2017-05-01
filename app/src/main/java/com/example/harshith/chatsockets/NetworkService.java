@@ -156,6 +156,21 @@ public class NetworkService extends Service {
             SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), handler, getApplicationContext(), request, ipAddress, port);
             sendDataThread.start();
             System.out.println("start Senddatathread");
+            if(request.get(0).equals("message")) {
+                Database.addMyMessage(request.get(1), request.get(2));
+            }
+            else if(request.get(0).equals("friend")) {
+                Database.getPerson(request.get(1)).setFriendIndication(1);
+            }
+            else if(request.get(0).equals("unblock")) {
+                Database.getPerson(request.get(1)).setFriendIndication(0);
+            }
+            else if(request.get(0).equals("block")) {
+                Database.getPerson(request.get(1)).setFriendIndication(-2);
+            }
+            else if(request.get(0).equals("accept")) {
+                Database.getPerson(request.get(1)).setFriendIndication(0);
+            }
 //            if(!wasSocketOpen) {
 //                ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext());
 //                receiveDataThread.start();
