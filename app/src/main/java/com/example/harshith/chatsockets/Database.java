@@ -1,9 +1,12 @@
 package com.example.harshith.chatsockets;
 
+import android.provider.ContactsContract;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 /**
  * Created by harshith on 4/30/17.
@@ -14,9 +17,9 @@ public class Database {
     private static String password;
     private static String ipAddr;
     private static int port;
-    private static ArrayList<Person> allPeople;
-    private static ArrayList<Person> friends;
-    private static ArrayList<Person> onlineUsers;
+    private static ArrayList<Person> allPeople = new ArrayList<Person>();
+    private static ArrayList<Person> friends = new ArrayList<Person>();
+    private static ArrayList<Person> onlineUsers = new ArrayList<Person>();
     private static Map<String, Person> people;
 
     public static synchronized void setMyself(ArrayList<String> login) {
@@ -47,18 +50,17 @@ public class Database {
 
     public static void initialize(ArrayList<Person> allPeople, ArrayList<Person> friends, ArrayList<Person> onlineUsers) {
         Database.people = new HashMap<String, Person>();
-        Database.friends = new ArrayList<Person>();
-        Database.onlineUsers = new ArrayList<Person>();
-        for (int i = 0; i != allPeople.size(); i++) {
-            people.put(allPeople.get(i).getUsername(), allPeople.get(i));
-            if(allPeople.get(i).getFriendIndication() == 0) {
-                friends.add(allPeople.get(i));
+        Database.allPeople.clear();
+        Database.allPeople.addAll(allPeople);
+        for (int i = 0; i != Database.allPeople.size(); i++) {
+            people.put(Database.allPeople.get(i).getUsername(), allPeople.get(i));
+            if(Database.allPeople.get(i).getFriendIndication() == 0) {
+                Database.friends.add(Database.allPeople.get(i));
             }
-            if(contains(onlineUsers, allPeople.get(i).getUsername())) {
-                onlineUsers.add(allPeople.get(i));
+            if(contains(onlineUsers, Database.allPeople.get(i).getUsername())) {
+                Database.onlineUsers.add(Database.allPeople.get(i));
             }
         }
-        Database.allPeople = allPeople;
     }
 
     public static String getYou() {

@@ -81,6 +81,7 @@ public class NetworkService extends Service {
                             if(online != null && friends != null && allusers != null)
                             Database.initialize(allusers, friends, online);
                             System.out.println("Database initialized");
+
                         }
                         else if(data.get(0).equals("urfriends")) {
                             friends = Person.getPersonArray(data);

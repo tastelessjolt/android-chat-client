@@ -83,54 +83,17 @@ public class ReceiveDataThread extends Thread{
                     stringBuilder.append(new String(buffer).substring(0, bytes));
                     Log.d("stream", stringBuilder.toString());
 
-                    while((endPos = stringBuilder.indexOf("#")) < 0) {
-                        bytes = inputStream.read(buffer);
-                        if (bytes == -1) {
-                            continue;
-                        } else {
-                            stringBuilder.append(new String(buffer).substring(0, bytes));
-                            Log.d("stream", stringBuilder.toString());
-                        }
+                    while((endPos = stringBuilder.indexOf("#")) >= 0) {
+                        data = Utils.string2list(stringBuilder.substring(0, endPos + 1));
+                        System.out.println(data);
+                        Message message = handler.obtainMessage(Constants.RESPONSE);
+                        Bundle bundle = new Bundle();
+                        bundle.putStringArrayList(Constants.READ, data);
+                        message.setData(bundle);
+                        handler.sendMessage(message);
+                        stringBuilder.delete(0, endPos + 1);
                     }
-
-                    data = Utils.string2list(stringBuilder.substring(0, endPos + 1));
-                    System.out.println(data);
-                    Message message = handler.obtainMessage(Constants.RESPONSE);
-                    Bundle bundle = new Bundle();
-                    bundle.putStringArrayList(Constants.READ, data);
-                    message.setData(bundle);
-                    handler.sendMessage(message);
-//                    if(data.get(0).equals("wrong") || data.get(0).equals("login")) {
-//                        if(LoginActivity.getBroadcastReceiver() != null) {
-//                            Intent intent = new Intent(Constants.BROADCAST);
-//                            intent.putExtra(Constants.BROADCAST, data);
-//                            context.sendBroadcast(intent);
-//                            System.out.println("Broadcasted from recvthread");
-//                        }
-////                        else if(NetworkService.getBroadcastReceiver() != null) {
-////                            LocalBroadcastManager.getInstance(this.context).registerReceiver(NetworkService.getBroadcastReceiver(), new IntentFilter(Constants.BROADCAST));
-//
-////                        }
-//                    }
-//                    else if(data.get(0).equals("olusers")) {
-//                        online = data;
-//                    }
-//                    else if(data.get(0).equals("urfriends")) {
-//                        friends = data;
-//                    }
-//                    else if(data.get(0).equals("users")) {
-//                        allUsers = data;
-//
-//                    }
-//                    else if(data.get(0).equals("message")) {
-//                        Database.addMessage(data);
-//                    }
-//                    else if(data.get(0).equals("messages")) {
-//                        Database.setAllMessages(data);
-//                    }
-//                    else {
-//                    }
-                    stringBuilder.delete(0, endPos + 1);
+                    System.out.print("end of while loop , Continues? ");
                 }
             }
         } catch (IOException e) {

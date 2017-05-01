@@ -28,6 +28,7 @@ public class Constants {
     public static String REQUEST = "request";
     public static String BROADCAST = "broadcast";
     public static String BROADCAST_BASE = "com.example.harshith.chatsockets";
+    public static String SYNC_DONE = "sync_done";
 
 
     public static String DATABASE = "database";

@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -66,10 +67,16 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
 
     Gson gson;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        allUserList = Database.getAllPeople();
+        friends = Database.getFriends();
+        onlineUsers = Database.getOnlineUsers();
 
 //        friends = gson.fromJson((String) userData.get(Constants.FRIENDS), new TypeToken<ArrayList<Person>>(){}.getType());
 //        onlineUsers = gson.fromJson((String) userData.get(Constants.ONLINE), new TypeToken<ArrayList<Person>>(){}.getType());
@@ -101,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
     protected void onResume() {
         super.onResume();
 
-
+        registerReceiver(broadcastReceiver, new IntentFilter(Constants.BROADCAST_BASE));
         if(SocketHandler.getSocket() == null) {
             allUserList = new ArrayList<Person>();
 
@@ -195,6 +202,12 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
 
 //            allUserList = gson.fromJson((String) userData.get(Constants.ALL_USERS), new TypeToken<ArrayList<Person>>(){}.getType());
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
