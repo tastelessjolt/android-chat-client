@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
 
 //            userLoginTask.execute((Void) null);
 
-            allUserList = gson.fromJson((String) userData.get(Constants.ALL_USERS), new TypeToken<ArrayList<Person>>(){}.getType());
+//            allUserList = gson.fromJson((String) userData.get(Constants.ALL_USERS), new TypeToken<ArrayList<Person>>(){}.getType());
 
     }
 

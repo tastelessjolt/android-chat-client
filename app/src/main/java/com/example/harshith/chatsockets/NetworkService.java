@@ -5,10 +5,16 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Parcelable;
+import android.provider.ContactsContract;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -37,6 +43,9 @@ public class NetworkService extends Service {
     InputStream inputStream;
     OutputStream outputStream;
     public Handler handler;
+    String ipAddress;
+    int port;
+    ArrayList<String> friends, allUsers, online;
 
     @Override
     public void onCreate() {
@@ -48,13 +57,21 @@ public class NetworkService extends Service {
                     Bundle bundle = message.getData();
                     if(bundle != null) {
                         ArrayList<String> data = bundle.getStringArrayList(Constants.READ);
-                        if (data.get(0).equals("")) {
-
+                        if (data.get(0).equals("login")) {
+                            System.out.println("Got in to the message handling the login");
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.LOGGED_IN);
+                            broadcast.putExtra(Constants.LOGIN_DETAILS, data);
+                            sendBroadcast(broadcast);
+                            System.out.println("Broadcasted message");
                         }
                         else {
-                            
+
                         }
                     }
+                }
+                else if(message.what == Constants.START_RECEIVE) {
+                    spawnReceiveThread();
                 }
             }
         };
@@ -77,21 +94,19 @@ public class NetworkService extends Service {
         ArrayList<String> request = intent.getStringArrayListExtra(Constants.REQUEST);
 
         boolean wasSocketOpen = true;
-        String ipAddress = intent.getStringExtra(Constants.IP_ADDR);
-        int port = intent.getIntExtra(Constants.PORT, 9399);
+        ipAddress = intent.getStringExtra(Constants.IP_ADDR);
+        port = intent.getIntExtra(Constants.PORT, 9399);
         System.out.println(request);
 
 
         if(request.get(0).equals("login")) {
-            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), getApplicationContext(), request, ipAddress, port);
+            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), handler, getApplicationContext(), request, ipAddress, port);
             sendDataThread.start();
             System.out.println("start Senddatathread");
-            ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), getApplicationContext(), , ipAddress, port);
-            receiveDataThread.start();
-            System.out.println("start receivedatathread");
+
         }
         else {
-            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), getApplicationContext(), request, ipAddress, port);
+            SendDataThread sendDataThread = new SendDataThread(SocketHandler.getSocket(), handler, getApplicationContext(), request, ipAddress, port);
             sendDataThread.start();
             System.out.println("start Senddatathread");
 //            if(!wasSocketOpen) {
@@ -108,5 +123,11 @@ public class NetworkService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public void spawnReceiveThread() {
+        ReceiveDataThread receiveDataThread = new ReceiveDataThread(SocketHandler.getSocket(), handler, getApplicationContext(), ipAddress, port);
+        receiveDataThread.start();
+        System.out.println("start receivedatathread");
     }
 }

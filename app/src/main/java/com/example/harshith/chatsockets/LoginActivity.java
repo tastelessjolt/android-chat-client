@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.audiofx.PresetReverb;
+import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
@@ -67,13 +68,39 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mIpAddressView;
     private EditText mPortView;
 
-    private static BroadcastReceiver broadcastReceiver;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("YO! Working!!");
+            if(intent.getStringExtra(Constants.BROADCAST).equals(Constants.LOGGED_IN)) {
+                ArrayList<String> login = intent.getStringArrayListExtra(Constants.LOGIN_DETAILS);
+                showProgress(false);
 
-    public static BroadcastReceiver getBroadcastReceiver() {
-        return broadcastReceiver;
+                if(login.get(0).equals("login")) {
+                    Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent1);
+                    finish();
+                }
+                else {
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        registerReceiver(broadcastReceiver, new IntentFilter(Constants.BROADCAST_BASE));
+
     }
-    public static void setBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
-        LoginActivity.broadcastReceiver = broadcastReceiver;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -81,27 +108,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(LoginActivity.getBroadcastReceiver(), new IntentFilter(Constants.BROADCAST));
-
-
-        setBroadcastReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if(intent.getStringExtra(Constants.BROADCAST).equals(Constants.LOGGED_IN)) {
-                    ArrayList<String> login = intent.getStringArrayListExtra(Constants.LOGIN_DETAILS);
-                    showProgress(false);
-                    if(login.get(0).equals("login")) {
-                        Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent1);
-                        finish();
-                    }
-                    else {
-                        mPasswordView.setError(getString(R.string.error_incorrect_password));
-                        mPasswordView.requestFocus();
-                    }
-                }
-            }
-        });
 
         // if logged in already redirect to MainActivity
         Context context = getApplicationContext();

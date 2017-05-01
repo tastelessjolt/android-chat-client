@@ -3,6 +3,7 @@ package com.example.harshith.chatsockets;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.IOException;
@@ -23,12 +24,14 @@ public class SendDataThread extends Thread{
     ArrayList<String> request;
     String ipAddr;
     int port;
-    public SendDataThread(Socket socket, Context context, ArrayList<String> request, String ipAddr, int port) {
+    Handler handler;
+    public SendDataThread(Socket socket, Handler handler, Context context, ArrayList<String> request, String ipAddr, int port) {
         this.socket = socket;
         this.context = context;
         this.request = request;
         this.ipAddr = ipAddr;
         this.port = port;
+        this.handler = handler;
     }
 
     @Override
@@ -62,11 +65,7 @@ public class SendDataThread extends Thread{
 
                 if(request.get(0).equals("login")) {
                     System.out.println("is login");
-                    LocalBroadcastManager.getInstance(this.context).registerReceiver(NetworkService.getBroadcastReceiver(), new IntentFilter(Constants.START_RECEIVE));
-                    Intent intent = new Intent(Constants.START_RECEIVE);
-//                    intent.putExtra(Constants.LOGIN_DETAILS, request);
-                    this.context.sendBroadcast(intent);
-                    System.out.println("broadcast sent");
+                    handler.sendMessage(handler.obtainMessage(Constants.START_RECEIVE));
                 }
 
             } catch (IOException e) {
