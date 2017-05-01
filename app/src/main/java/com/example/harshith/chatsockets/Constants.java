@@ -29,11 +29,12 @@ public class Constants {
     public static String BROADCAST = "broadcast";
     public static String BROADCAST_BASE = "com.example.harshith.chatsockets";
     public static String SYNC_DONE = "sync_done";
-
+    public static String CHAT = "chat";
 
     public static String DATABASE = "database";
     public static int RESPONSE = 2;
     public static int START_RECEIVE = 1;
+
 
 
     public static String READ = "response";

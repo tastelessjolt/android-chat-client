@@ -82,35 +82,63 @@ public class NetworkService extends Service {
                             Database.initialize(allusers, friends, online);
                             System.out.println("Database initialized");
 
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
+                            System.out.println("Broadcasted message");
                         }
                         else if(data.get(0).equals("urfriends")) {
                             friends = Person.getPersonArray(data);
                         }
                         else if(data.get(0).equals("online")) {
                             Database.setOnline(data);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
                         }
                         else if(data.get(0).equals("offline")) {
                             Database.setOffline(data);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
                         }
                         else if(data.get(0).equals("message")) {
                             Database.getPerson(data.get(1)).addMessage(data.get(2), false);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.CHAT);
+                            sendBroadcast(broadcast);
                         }
                         else if(data.get(0).equals("blocked")) {
                             Person blocked;
                             blocked = Database.getPerson(data.get(1));
                             blocked.setFriendIndication(2);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
                         }
                         else if(data.get(0).equals("sentreq")) {
                             Database.getPerson(data.get(1)).setFriendIndication(1);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
                         }
                         else if(data.get(0).equals("recvreq")) {
                             Database.getPerson(data.get(1)).setFriendIndication(-1);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
                         }
                         else if(data.get(0).equals("accepted")) {
                             Database.getPerson(data.get(1)).setFriendIndication(0);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
                         }
                         else if(data.get(0).equals("acceptedyour")) {
                             Database.getPerson(data.get(1)).setFriendIndication(0);
+                            Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                            broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
+                            sendBroadcast(broadcast);
                         }
                         else {
                             //

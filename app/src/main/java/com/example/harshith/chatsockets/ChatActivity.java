@@ -1,6 +1,9 @@
 package com.example.harshith.chatsockets;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -20,6 +23,15 @@ public class ChatActivity extends AppCompatActivity {
     String username;
     ArrayList<MessageData> messageList;
     Person person;
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getStringExtra(Constants.BROADCAST).equals(Constants.CHAT)) {
+                mAdapter.notifyDataSetChanged();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,9 +40,10 @@ public class ChatActivity extends AppCompatActivity {
         username = getIntent().getStringExtra(Constants.USERNAME);
         System.out.println(username + " opened");
         person = Database.getPerson(username);
-
+        if (person.getName() != null && getSupportActionBar()!= null) {
+            getSupportActionBar().setTitle(person.getName() + "(@" + username + ")");
+        }
     }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -49,6 +62,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(Constants.BROADCAST_BASE));
 
         Button sendReq = (Button) findViewById(R.id.send_req);
         final EditText editText = (EditText) findViewById(R.id.chatBox);
@@ -114,9 +128,9 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.chat);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
+//        // use this setting to improve performance if you know that changes
+//        // in content do not change the layout size of the RecyclerView
+//        recyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -128,6 +142,12 @@ public class ChatActivity extends AppCompatActivity {
 
         mAdapter = new ChatAdapter(messageList);
         recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        registerReceiver(broadcastReceiver, new IntentFilter(Constants.BROADCAST_BASE));
     }
 
     @Override

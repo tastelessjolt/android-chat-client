@@ -318,7 +318,14 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
         private ArrayList<Person> userList;
 
         private Gson gson;
-        private static BroadcastReceiver broadcastReceiver;
+        private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getStringExtra(Constants.BROADCAST).equals(Constants.USERS)) {
+                    mUsersAdapter.notifyDataSetChanged();
+                }
+            }
+        };
 
 
         public PlaceholderFragment() {
@@ -371,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements ServerDetailDialo
 
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
-            mUsersRecyclerView.setHasFixedSize(true);
+//            mUsersRecyclerView.setHasFixedSize(true);
 
             // use a linear layout manager
             mLayoutManager = new LinearLayoutManager(getContext());
