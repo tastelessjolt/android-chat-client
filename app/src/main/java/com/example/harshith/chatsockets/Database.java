@@ -125,7 +125,7 @@ public class Database {
     }
     public static synchronized void setOffline(ArrayList<String> offline) {
         if(offline != null) {
-            if (offline.get(0).equals("online")) {
+            if (offline.get(0).equals("offline")) {
                 if(people.containsKey(offline.get(1))) {
                     people.get(offline.get(1)).setOnline(false);
                     onlineUsers.remove(people.get(offline.get(1)));
@@ -188,6 +188,11 @@ public class Database {
                 }
             }
         }
+    }
+
+    public static synchronized Person getPerson(String username) {
+        if(people.containsKey(username))
+            return people.get(username);
     }
 
 }
