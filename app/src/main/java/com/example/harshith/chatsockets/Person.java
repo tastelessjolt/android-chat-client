@@ -56,6 +56,10 @@ public class Person {
         this.online = online;
     }
 
+    public boolean getOnline() {
+        return this.online;
+    }
+
     public int getFriendIndication() {
         return friendIndication;
     }
@@ -76,6 +80,11 @@ public class Person {
                 if(person.getFriendIndication() == 0) {
                     i++;
                     person.setLastOnline(list.get(i));
+                    i++;
+                    if(list.get(i).equals("1"))
+                        person.setOnline(true);
+                    else
+                        person.setOnline(false);
                 }
                 else {
                     person.setLastOnline("");

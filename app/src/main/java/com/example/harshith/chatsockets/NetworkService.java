@@ -59,7 +59,7 @@ public class NetworkService extends Service {
                     if(bundle != null) {
                         ArrayList<String> data = bundle.getStringArrayList(Constants.READ);
                         if (data.get(0).equals("login")) {
-
+                            Database.setMyself(data);
                             System.out.println("Got in to the message handling the login");
                             Intent broadcast = new Intent(Constants.BROADCAST_BASE);
                             broadcast.putExtra(Constants.BROADCAST, Constants.LOGGED_IN);
@@ -73,13 +73,12 @@ public class NetworkService extends Service {
                         else if(data.get(0).equals("logout")) {
                             // Username/Password incorrect
                         }
-                        else if(data.get(0).equals("olusers")) {
-                            online  = Person.getPersonArray(data);
-                        }
+//                        else if(data.get(0).equals("olusers")) {
+//                            online  = Person.getPersonArray(data);
+//                        }
                         else if(data.get(0).equals("users")) {
                             allusers = Person.getPersonArray(data);
-                            if(online != null && friends != null && allusers != null)
-                            Database.initialize(allusers, friends, online);
+                            Database.initialize(allusers);
                             System.out.println("Database initialized");
 
                             Intent broadcast = new Intent(Constants.BROADCAST_BASE);
@@ -87,9 +86,9 @@ public class NetworkService extends Service {
                             sendBroadcast(broadcast);
                             System.out.println("Broadcasted message");
                         }
-                        else if(data.get(0).equals("urfriends")) {
-                            friends = Person.getPersonArray(data);
-                        }
+//                        else if(data.get(0).equals("urfriends")) {
+//                            friends = Person.getPersonArray(data);
+//                        }
                         else if(data.get(0).equals("online")) {
                             Database.setOnline(data);
                             Intent broadcast = new Intent(Constants.BROADCAST_BASE);
@@ -140,8 +139,8 @@ public class NetworkService extends Service {
                             broadcast.putExtra(Constants.BROADCAST, Constants.USERS);
                             sendBroadcast(broadcast);
                         }
-                        else {
-                            //
+                        else if(data.get(0).equals("all_messages")){
+                            Database.setAllMessages(data);
                         }
                     }
                 }
@@ -186,6 +185,9 @@ public class NetworkService extends Service {
             System.out.println("start Senddatathread");
             if(request.get(0).equals("message")) {
                 Database.addMyMessage(request.get(1), request.get(2));
+                Intent broadcast = new Intent(Constants.BROADCAST_BASE);
+                broadcast.putExtra(Constants.BROADCAST, Constants.CHAT);
+                sendBroadcast(broadcast);
             }
             else if(request.get(0).equals("friend")) {
                 Database.getPerson(request.get(1)).setFriendIndication(1);

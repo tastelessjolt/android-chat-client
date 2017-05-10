@@ -48,7 +48,7 @@ public class Database {
         return password;
     }
 
-    public static void initialize(ArrayList<Person> allPeople, ArrayList<Person> friends, ArrayList<Person> onlineUsers) {
+    public static void initialize(ArrayList<Person> allPeople) {
         Database.people = new HashMap<String, Person>();
         Database.allPeople.clear();
         Database.allPeople.addAll(allPeople);
@@ -56,9 +56,9 @@ public class Database {
             people.put(Database.allPeople.get(i).getUsername(), allPeople.get(i));
             if(Database.allPeople.get(i).getFriendIndication() == 0) {
                 Database.friends.add(Database.allPeople.get(i));
-            }
-            if(contains(onlineUsers, Database.allPeople.get(i).getUsername())) {
-                Database.onlineUsers.add(Database.allPeople.get(i));
+                if(Database.allPeople.get(i).getOnline()) {
+                    Database.onlineUsers.add(Database.allPeople.get(i));
+                }
             }
         }
     }
@@ -181,12 +181,11 @@ public class Database {
         if(messages != null) {
             if(Objects.equals(messages.get(0), "all_messages")) {
                 String username = messages.get(1);
+                Person other_person = people.get(username);
+                other_person.getMessageDatas().clear();
                 for(int i = 2; i < messages.size(); i++) {
-                    if(Objects.equals(messages.get(i), you)) {
-                        people.get(username).getMessageDatas().add(new MessageData(messages.get(i+1), true));
-                    }
-                    else
-                        people.get(username).getMessageDatas().add(new MessageData(messages.get(i+1), false));
+                    other_person.getMessageDatas().add(new MessageData(messages.get(i+1), messages.get(i).equals(you)));
+                    i++;
                 }
             }
         }

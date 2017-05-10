@@ -51,7 +51,7 @@
                     android:inputType="textAutoComplete"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="rand" />
+                    android:text="harshithg" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -70,7 +70,7 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="rand" />
+                    android:text="pass" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -102,7 +102,7 @@
                     android:ems="10"
                     android:hint=""
                     android:inputType="textPersonName"
-                    android:text="10.196.2.36" />
+                    android:text="192.168.1.17" />
 
             </android.support.design.widget.TextInputLayout>
             <android.support.design.widget.TextInputLayout

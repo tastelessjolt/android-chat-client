@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.ActionMode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +38,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        Log.d("ChatActivity", "Created me <~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>");
 
         username = getIntent().getStringExtra(Constants.USERNAME);
         System.out.println(username + " opened");
@@ -94,6 +98,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     final String message = editText.getText().toString();
+                    editText.setText("");
                     ArrayList<String> messageList = new ArrayList<String>() {
                         {
                             add("message");
@@ -104,6 +109,7 @@ public class ChatActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), NetworkService.class);
                     intent.putExtra(Constants.REQUEST, messageList);
                     startService(intent);
+
                 }
             });
         }
@@ -147,12 +153,20 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        registerReceiver(broadcastReceiver, new IntentFilter(Constants.BROADCAST_BASE));
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        this.finish();
+        Log.d("ChatActivity", " back pressed <- !");
+        return;
+//        this.finish();
+    }
+
+    @Override
+    public void onActionModeFinished(ActionMode mode) {
+        super.onActionModeFinished(mode);
+
     }
 }

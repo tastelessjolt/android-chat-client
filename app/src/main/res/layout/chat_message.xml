@@ -6,6 +6,7 @@
     <Button
         android:id="@+id/messageText"
         android:padding="@dimen/message_padding"
+        android:textAllCaps="false"
         android:layout_marginLeft="@dimen/message_margin"
         android:layout_marginRight="@dimen/message_margin"
         android:layout_marginBottom="@dimen/message_margin"
